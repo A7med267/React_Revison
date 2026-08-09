@@ -1,0 +1,32 @@
+* {
+  padding: 0;
+  margin: 0;
+  font-family: "Almarai", sans-serif;
+}
+
+body {
+  background-color: #E9E2D0;
+  margin: 0;
+}
+
+.toggelbtn {
+  border-radius: 8px;
+}
+
+.toggelbtn:hover {
+  background-color: rgba(15, 76, 189, 0.2) !important;
+}
+
+.toggelbtn.Mui-selected {
+  background-color: rgba(15, 76, 189, 0.2) !important;
+  color: white;
+}
+
+.task {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.task:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
