@@ -1,17 +1,101 @@
-import React from "react";
 import "./index.css";
-
+import React, { useState } from "react";
 import Divider from "@mui/material/Divider";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-
 import Todo from "./Todo";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [alignment, setAlignment] = React.useState("all");
+
+  const [edit, setEdit] = useState(false);
+  const [todos, setTodos] = useState([]);
+  const [formInput, setFormInput] = useState({
+    id: uuidv4(),
+    title: "",
+    details: "",
+    isCompleted: false,
+  });
+
+  function handleClick() {
+    if (formInput.title.trim() === "") {
+      return alert("Enter Your Task");
+    }
+    if (edit) {
+      const newTodos = todos.map((todo) => {
+        if (todo.id === formInput.id) {
+          return formInput;
+        }
+        return todo;
+      });
+      setTodos(newTodos);
+      setEdit(false);
+
+      setFormInput({
+        id: uuidv4(),
+        title: "",
+        details: "",
+        isCompleted: false,
+      });
+    } else {
+      const newTodo = {
+        id: uuidv4(),
+        title: formInput.title,
+        details: "",
+        isCompleted: false,
+      };
+      setTodos([...todos, newTodo]);
+      setFormInput({
+        id: uuidv4(),
+        title: "",
+        details: "",
+        isCompleted: false,
+      });
+    }
+  }
+
+  function handleDelete(id) {
+    const newTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(newTodos);
+  }
+
+  function handleEidite(id) {
+    const todo = todos.find((todo) => todo.id == id);
+    setFormInput(todo);
+    setEdit(true);
+  }
+
+  function handleCheck(id) {
+    const newTodos = todos.map((todo) => {
+      if (todo.id === id) {
+        return {
+          ...todo,
+          isCompleted: !todo.isCompleted,
+        };
+      }
+      return todo;
+    });
+    setTodos(newTodos);
+  }
+
+  const filteredTodos = todos.filter((todo) => {
+    if (alignment === "completed") {
+      return todo.isCompleted === true;
+    }
+
+    if (alignment === "notCompleted") {
+      return todo.isCompleted === false;
+    }
+
+    return true;
+  });
 
   const handleAlignment = (event, newAlignment) => {
     if (newAlignment !== null) {
@@ -52,7 +136,7 @@ function App() {
 
         {/* Filter Buttons */}
 
-        <ToggleButtonGroup 
+        <ToggleButtonGroup
           value={alignment}
           exclusive
           onChange={handleAlignment}
@@ -71,10 +155,45 @@ function App() {
           </ToggleButton>
         </ToggleButtonGroup>
 
+        {/* add task  */}
+        <Grid container spacing={2} sx={{ margin: "18px" }}>
+          <Grid size={9}>
+            <TextField
+              label="إضافة مهمة"
+              variant="outlined"
+              fullWidth
+              direction="ltr"
+              value={formInput.title}
+              onChange={(e) =>
+                setFormInput({ ...formInput, title: e.target.value })
+              }
+            />
+          </Grid>
+
+          <Grid size={3}>
+            <Button
+              sx={{ width: "100px", height: "50px" }}
+              variant="contained"
+              onClick={() => {
+                handleClick();
+              }}
+            >
+              إضافة
+            </Button>
+          </Grid>
+        </Grid>
+
         {/* Task */}
 
-        <Todo />
-        
+        {filteredTodos.map((todo) => (
+          <Todo
+            key={todo.id}
+            todo={todo}
+            handleDelete={handleDelete}
+            handleCheck={handleCheck}
+            handleEidite={handleEidite}
+          />
+        ))}
       </Card>
     </Container>
   );
