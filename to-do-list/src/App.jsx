@@ -1,5 +1,5 @@
 import "./index.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Divider from "@mui/material/Divider";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
@@ -14,17 +14,32 @@ import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [alignment, setAlignment] = React.useState("all");
+const [edit, setEdit] = useState(false);
+const [todos, setTodos] = useState([]);
+const [isLoaded, setIsLoaded] = useState(false);
+const [formInput, setFormInput] = useState({
+  id: uuidv4(),
+  title: "",
+  details: "",
+  isCompleted: false,
+});
 
-  const [edit, setEdit] = useState(false);
-  const [todos, setTodos] = useState([]);
-  const [formInput, setFormInput] = useState({
-    id: uuidv4(),
-    title: "",
-    details: "",
-    isCompleted: false,
-  });
+useEffect(() => {
+  const storageTodos = localStorage.getItem("todos");
 
-  function handleClick() {
+  if (storageTodos) {
+    setTodos(JSON.parse(storageTodos));
+  }
+  setIsLoaded(true);
+}, []);
+
+useEffect(() => {
+  if (isLoaded) {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }
+}, [todos, isLoaded]);
+
+  function handleClick() {   // Add Click
     if (formInput.title.trim() === "") {
       return alert("Enter Your Task");
     }
@@ -51,7 +66,8 @@ function App() {
         details: "",
         isCompleted: false,
       };
-      setTodos([...todos, newTodo]);
+      const updatedTodos =[...todos, newTodo]
+      setTodos(updatedTodos);
       setFormInput({
         id: uuidv4(),
         title: "",
@@ -106,13 +122,14 @@ function App() {
   return (
     <Container
       maxWidth="sm"
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-        height: "100vh",
-      }}
+   sx={{
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "flex-start",   // بدل center
+  height: "100vh",
+  overflow: "auto",
+}}
+
     >
       <Card
         sx={{
