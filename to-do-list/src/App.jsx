@@ -1,6 +1,5 @@
 import "./index.css";
-import React, { useEffect, useState } from "react";
-import Divider from "@mui/material/Divider";
+import React, { useEffect, useState, useMemo } from "react";import Divider from "@mui/material/Divider";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
@@ -101,17 +100,20 @@ useEffect(() => {
     setTodos(newTodos);
   }
 
-  const filteredTodos = todos.filter((todo) => {
-    if (alignment === "completed") {
-      return todo.isCompleted === true;
-    }
+  const filteredTodos = useMemo(() => {
+    console.log("useMemo اتنفذ - بيفلتر الـ todos");
+    return todos.filter((todo) => {
+      if (alignment === "completed") {
+        return todo.isCompleted === true;
+      }
 
-    if (alignment === "notCompleted") {
-      return todo.isCompleted === false;
-    }
+      if (alignment === "notCompleted") {
+        return todo.isCompleted === false;
+      }
 
-    return true;
-  });
+      return true;
+    });
+  }, [todos, alignment]);
 
   const handleAlignment = (event, newAlignment) => {
     if (newAlignment !== null) {
@@ -122,23 +124,23 @@ useEffect(() => {
   return (
     <Container
       maxWidth="sm"
-   sx={{
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "flex-start",   // بدل center
-  height: "100vh",
-  overflow: "auto",
-}}
-
-    >
+        sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",  
+        height: "100vh",
+        overflow: "auto",
+      }}
+      >
       <Card
         sx={{
           width: "100%",
           minHeight: 400,
           bgcolor: "#fef7e6",
+          textAlign:"center",
           padding: 2,
         }}
-      >
+        >
         <Typography
           variant="h3"
           sx={{
