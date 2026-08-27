@@ -150,23 +150,23 @@ useEffect(() => {
   return (
     <Container
       maxWidth="sm"
-        sx={{
+      sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",  
-        height: "100vh",
-        overflow: "auto",
+        alignItems: "center",
+        minHeight: "100vh",
+        padding: 2,
       }}
-      >
+    >
       <Card
         sx={{
           width: "100%",
           minHeight: 400,
           bgcolor: "#fef7e6",
-          textAlign:"center",
+          textAlign: "center",
           padding: 2,
         }}
-        >
+      >
         <Typography
           variant="h3"
           sx={{
@@ -201,8 +201,15 @@ useEffect(() => {
         </ToggleButtonGroup>
 
         {/* add task  */}
-        <Grid container spacing={2} sx={{ margin: "18px" }}>
-          <Grid size={9}>
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            margin: "18px 0",
+          }}
+        >
+          <Grid size={{ xs: 12, sm: 9 }}>
+
             <TextField
               label="إضافة مهمة"
               variant="outlined"
@@ -215,16 +222,17 @@ useEffect(() => {
             />
           </Grid>
 
-          <Grid size={3}>
-            <Button
-              sx={{ width: "100px", height: "50px" }}
-              variant="contained"
-              onClick={() => {
-                handleClick();
-              }}
-            >
-              إضافة
-            </Button>
+          <Grid size={{ xs: 12, sm: 3 }}>
+           <Button
+            sx={{
+              width: "100%",
+              height: "50px",
+            }}
+            variant="contained"
+            onClick={handleClick}
+          >
+            {edit ? "تعديل" : "إضافة"}
+          </Button>
           </Grid>
         </Grid>
 
@@ -241,11 +249,7 @@ useEffect(() => {
         ))}
       </Card>
 
-    <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        dir="rtl"
-      >
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} dir="rtl">
         <DialogTitle>تأكيد الحذف</DialogTitle>
 
         <DialogContent>
@@ -255,9 +259,7 @@ useEffect(() => {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>
-            إلغاء
-          </Button>
+          <Button onClick={() => setOpenDialog(false)}>إلغاء</Button>
 
           <Button
             onClick={handleConfirmDelete}
@@ -268,7 +270,6 @@ useEffect(() => {
           </Button>
         </DialogActions>
       </Dialog>
-
     </Container>
   );
 }
