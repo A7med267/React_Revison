@@ -11,8 +11,15 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { v4 as uuidv4 } from "uuid";
 
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+
+
 function App() {
-  const [alignment, setAlignment] = React.useState("all");
+const [alignment, setAlignment] = React.useState("all");
 const [edit, setEdit] = useState(false);
 const [todos, setTodos] = useState([]);
 const [isLoaded, setIsLoaded] = useState(false);
@@ -22,6 +29,23 @@ const [formInput, setFormInput] = useState({
   details: "",
   isCompleted: false,
 });
+
+const [openDialog, setOpenDialog] = useState(false);
+const [deleteId, setDeleteId] = useState(null);
+
+
+function handleOpenDeleteDialog(id) {
+  setDeleteId(id);
+  setOpenDialog(true);
+}
+
+
+function handleConfirmDelete() {
+  handleDelete(deleteId);
+  setOpenDialog(false);
+  setDeleteId(null);
+}
+
 
 useEffect(() => {
   const storageTodos = localStorage.getItem("todos");
@@ -37,6 +61,8 @@ useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }
 }, [todos, isLoaded]);
+
+
 
   function handleClick() {   // Add Click
     if (formInput.title.trim() === "") {
@@ -208,12 +234,41 @@ useEffect(() => {
           <Todo
             key={todo.id}
             todo={todo}
-            handleDelete={handleDelete}
+            handleDelete={handleOpenDeleteDialog}
             handleCheck={handleCheck}
             handleEidite={handleEidite}
           />
         ))}
       </Card>
+
+    <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        dir="rtl"
+      >
+        <DialogTitle>تأكيد الحذف</DialogTitle>
+
+        <DialogContent>
+          <DialogContentText>
+            هل أنت متأكد أنك تريد حذف هذه المهمة؟
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>
+            إلغاء
+          </Button>
+
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+          >
+            حذف
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </Container>
   );
 }
