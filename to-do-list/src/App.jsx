@@ -1,5 +1,5 @@
 import "./index.css";
-import React, { useEffect, useState, useMemo } from "react";import Divider from "@mui/material/Divider";
+import React, { useEffect, useState, useMemo, useContext } from "react";import Divider from "@mui/material/Divider";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
@@ -16,9 +16,22 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
+import SnackBar from "./SnacBar";
+import { ToastContext } from "./context/ToastContext";
+
 
 
 function App() {
+
+const {
+  message,
+  open,
+  severity,
+  handleOpenSnackbar,
+  handleCloseSnackbar
+} = useContext(ToastContext);
+
+
 const [alignment, setAlignment] = React.useState("all");
 const [edit, setEdit] = useState(false);
 const [todos, setTodos] = useState([]);
@@ -32,7 +45,6 @@ const [formInput, setFormInput] = useState({
 
 const [openDialog, setOpenDialog] = useState(false);
 const [deleteId, setDeleteId] = useState(null);
-
 
 function handleOpenDeleteDialog(id) {
   setDeleteId(id);
@@ -93,6 +105,8 @@ useEffect(() => {
       };
       const updatedTodos =[...todos, newTodo]
       setTodos(updatedTodos);
+
+       handleOpenSnackbar("تمت إضافة المهمة بنجاح");
       setFormInput({
         id: uuidv4(),
         title: "",
@@ -105,6 +119,7 @@ useEffect(() => {
   function handleDelete(id) {
     const newTodos = todos.filter((todo) => todo.id !== id);
     setTodos(newTodos);
+   handleOpenSnackbar("تم حذف المهمة بنجاح", "error");
   }
 
   function handleEidite(id) {
@@ -200,6 +215,13 @@ useEffect(() => {
           </ToggleButton>
         </ToggleButtonGroup>
 
+       <SnackBar
+          open={open}
+            message={message}
+            severity={severity}
+          handleClose={handleCloseSnackbar}
+        />
+
         {/* add task  */}
         <Grid
           container
@@ -271,6 +293,7 @@ useEffect(() => {
         </DialogActions>
       </Dialog>
     </Container>
+  
   );
 }
 
