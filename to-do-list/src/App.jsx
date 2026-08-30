@@ -89,6 +89,9 @@ useEffect(() => {
       });
       setTodos(newTodos);
       setEdit(false);
+      
+      handleOpenSnackbar("تم تعديل المهمة بنجاح", "info");
+
 
       setFormInput({
         id: uuidv4(),
