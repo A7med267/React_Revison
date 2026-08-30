@@ -1,5 +1,5 @@
 import "./index.css";
-import React, { useEffect, useState, useMemo, useContext } from "react";import Divider from "@mui/material/Divider";
+import React, { useEffect, useState, useMemo, useContext , useReducer } from "react";import Divider from "@mui/material/Divider";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
@@ -18,10 +18,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import SnackBar from "./SnacBar";
 import { ToastContext } from "./context/ToastContext";
+import todosReducer from "./todosReducer/todosReducer"
 
 
-
-function App() {
+function App() { 
 
 const {
   message,
@@ -31,10 +31,11 @@ const {
   handleCloseSnackbar
 } = useContext(ToastContext);
 
+const [todos , dispatch] = useReducer(todosReducer , [])
 
 const [alignment, setAlignment] = React.useState("all");
 const [edit, setEdit] = useState(false);
-const [todos, setTodos] = useState([]);
+// const [todos, setTodos] = useState([]);
 const [isLoaded, setIsLoaded] = useState(false);
 const [formInput, setFormInput] = useState({
   id: uuidv4(),
@@ -63,8 +64,11 @@ useEffect(() => {
   const storageTodos = localStorage.getItem("todos");
 
   if (storageTodos) {
-    setTodos(JSON.parse(storageTodos));
-  }
+    dispatch({
+      type:"loaded",
+      payload:JSON.parse(storageTodos)
+    })
+    }
   setIsLoaded(true);
 }, []);
 
@@ -81,15 +85,12 @@ useEffect(() => {
       return alert("Enter Your Task");
     }
     if (edit) {
-      const newTodos = todos.map((todo) => {
-        if (todo.id === formInput.id) {
-          return formInput;
-        }
-        return todo;
-      });
-      setTodos(newTodos);
+      dispatch({
+        type:"edited",
+        payload:formInput
+      })
       setEdit(false);
-      
+
       handleOpenSnackbar("تم تعديل المهمة بنجاح", "info");
 
 
@@ -106,8 +107,10 @@ useEffect(() => {
         details: "",
         isCompleted: false,
       };
-      const updatedTodos =[...todos, newTodo]
-      setTodos(updatedTodos);
+      dispatch({
+        type:"added",
+        payload:newTodo
+      })
 
        handleOpenSnackbar("تمت إضافة المهمة بنجاح");
       setFormInput({
@@ -120,28 +123,25 @@ useEffect(() => {
   }
 
   function handleDelete(id) {
-    const newTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(newTodos);
-   handleOpenSnackbar("تم حذف المهمة بنجاح", "error");
+    dispatch({
+      type: "delete",
+      payload: id
+    });
+
+    handleOpenSnackbar("تم حذف المهمة بنجاح", "error");
   }
 
   function handleEidite(id) {
-    const todo = todos.find((todo) => todo.id == id);
+    const todo = todos.find((todo) => todo.id === id);
     setFormInput(todo);
     setEdit(true);
   }
 
   function handleCheck(id) {
-    const newTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        return {
-          ...todo,
-          isCompleted: !todo.isCompleted,
-        };
-      }
-      return todo;
-    });
-    setTodos(newTodos);
+    dispatch({
+      type:"isCompleted",
+      payload:id
+    })
   }
 
   const filteredTodos = useMemo(() => {
